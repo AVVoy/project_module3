@@ -1,7 +1,6 @@
 package servlet;
 
 import entity.Product;
-import entity.User;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -10,11 +9,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.ProductService;
-import service.UserService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @WebServlet("/secure/products")
@@ -34,7 +32,16 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/secure/products.html").forward(req, resp);
+        List<Product> products = productService.getAllProducts();
+        HttpSession session = req.getSession();
+        UUID userId = (UUID) session.getAttribute("userId");
+        List<Product> userProducts = products.stream()
+                .filter(product -> product.getUserId().equals(userId))
+                .toList();
+
+        req.setAttribute("products", userProducts);
+
+        req.getRequestDispatcher("/secure/products.jsp").forward(req, resp);
     }
 
     @Override
@@ -51,5 +58,16 @@ public class ProductServlet extends HttpServlet {
                 .userId((UUID) session.getAttribute("userId"))
                 .build()
         );
+
+        resp.sendRedirect("/secure/products");
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        UUID productId = UUID.fromString(req.getParameter("productId"));
+
+        productService.deleteProductById((UUID) productId);
+
+        resp.sendRedirect("/secure/products");
     }
 }

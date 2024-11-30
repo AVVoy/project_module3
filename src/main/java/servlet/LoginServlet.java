@@ -15,7 +15,6 @@ import service.UserService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @WebServlet(urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
@@ -54,7 +53,7 @@ public class LoginServlet extends HttpServlet {
 
         if(registeredUser.isPresent()) {
             session.setAttribute("userId", registeredUser.get().getId());
-            resp.sendRedirect("/secure/products.html");
+            resp.sendRedirect("/secure/products");
         } else {
             resp.sendRedirect("login.html");
         }
