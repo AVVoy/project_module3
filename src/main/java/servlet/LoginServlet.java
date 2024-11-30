@@ -53,7 +53,7 @@ public class LoginServlet extends HttpServlet {
                 .findFirst();
 
         if(registeredUser.isPresent()) {
-            session.setAttribute("userId", registeredUser.get().getId().toString());
+            session.setAttribute("userId", registeredUser.get().getId());
             resp.sendRedirect("/secure/products.html");
         } else {
             resp.sendRedirect("login.html");
