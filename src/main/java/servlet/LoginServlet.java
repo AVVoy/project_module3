@@ -8,6 +8,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.UserService;
 
@@ -39,19 +40,21 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
         String login = req.getParameter("login");
         String password = req.getParameter("password");
 
         String hashPassword = passwordEncoder.encode(password);
 
         List<User> users = userService.getAllUsers();
-
-        Optional<User> registeredUser = users.stream().filter(user -> user.getLogin().equals(login))
+        Optional<User> registeredUser = users.stream()
+                .filter(user -> user.getLogin().equals(login))
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()))
                 .findFirst();
 
         if(registeredUser.isPresent()) {
-            resp.sendRedirect("index.html");
+            session.setAttribute("userId", registeredUser.get().getId().toString());
+            resp.sendRedirect("/secure/products.html");
         } else {
             resp.sendRedirect("login.html");
         }
