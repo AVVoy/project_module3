@@ -10,10 +10,13 @@ import jakarta.servlet.annotation.WebListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.ProductService;
 import service.UserService;
-import service.validation.LoginValidator;
-import service.validation.PasswordValidator;
+import service.validation.LoginValidationExecutor;
+import service.validation.Validator;
+import service.validation.impl.LoginValidator;
+import service.validation.impl.PasswordValidator;
 
 import java.io.File;
+import java.util.Map;
 
 @WebListener
 public class InitializationListener implements ServletContextListener {
@@ -30,21 +33,25 @@ public class InitializationListener implements ServletContextListener {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         UserService userService = new UserService(userDAO, passwordEncoder);
 
-        ProductDAO productDao = new ProductDAO(objectMapper, productFile);
-        ProductService productService = new ProductService(productDao);
-
-
-
         LoginValidator loginValidator = new LoginValidator(userService);
         PasswordValidator passwordValidator = new PasswordValidator();
+
+        Map<String, Validator> validatorMap = Map.ofEntries(
+                Map.entry("login", loginValidator),
+                Map.entry("password", passwordValidator)
+        );
+
+        LoginValidationExecutor loginValidationExecutor = new LoginValidationExecutor(validatorMap);
+
+        ProductDAO productDao = new ProductDAO(objectMapper, productFile);
+        ProductService productService = new ProductService(productDao);
 
         servletContext.setAttribute("userService", userService);
         servletContext.setAttribute("passwordEncoder", passwordEncoder);
 
         servletContext.setAttribute("productService", productService);
 
-        servletContext.setAttribute("loginValidator", loginValidator);
-        servletContext.setAttribute("passwordValidator", passwordValidator);
+        servletContext.setAttribute("loginValidationExecutor", loginValidationExecutor);
 
     }
 }

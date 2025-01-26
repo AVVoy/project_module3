@@ -6,9 +6,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import servlet.auth.helper.CredentialsExtractor;
+import servlet.auth.helper.dto.Credential;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 @WebServlet(urlPatterns = "/login")
@@ -22,10 +23,10 @@ public class LoginServlet extends BaseAuthServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
-        String login = req.getParameter("login");
-        String password = req.getParameter("password");
 
-        Optional<User> registeredUser = userService.getRegisteredUser(login, password);
+        Credential credential = CredentialsExtractor.extract(req);
+
+        Optional<User> registeredUser = userService.getRegisteredUser(credential);
 
         if(registeredUser.isPresent()) {
             session.setAttribute("userId", registeredUser.get().getId());

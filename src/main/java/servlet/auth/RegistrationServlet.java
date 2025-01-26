@@ -1,13 +1,13 @@
 package servlet.auth;
 
-import entity.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import servlet.auth.helper.CredentialsExtractor;
+import servlet.auth.helper.dto.Credential;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @WebServlet(urlPatterns = "/registration")
 public class RegistrationServlet extends BaseAuthServlet {
@@ -19,16 +19,10 @@ public class RegistrationServlet extends BaseAuthServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String login = req.getParameter("login");
-        String password = req.getParameter("password");
 
+        Credential credential = CredentialsExtractor.extract(req);
 
-        userService.saveUser(User.builder()
-                .id(UUID.randomUUID())
-                .login(login)
-                .password(userService.getHashPassword(password))
-                .build()
-        );
+        userService.saveUser(credential);
 
         resp.sendRedirect("login.jsp");
     }

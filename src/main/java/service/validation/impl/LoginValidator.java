@@ -1,16 +1,20 @@
-package service.validation;
+package service.validation.impl;
 
 import entity.User;
-import lombok.RequiredArgsConstructor;
 import service.UserService;
+import service.validation.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
-public class LoginValidator {
+public class LoginValidator implements Validator {
+
 
     private final UserService userService;
+
+    public LoginValidator(UserService userService) {
+        this.userService = userService;
+    }
 
     public List<String> validate(String login) {
         List<String> errorMessages = new ArrayList<>();
@@ -19,13 +23,18 @@ public class LoginValidator {
             errorMessages.add("This login already is occupied");
         }
 
-        if(login.length() < 5) {
+        if (login.length() < 5) {
             errorMessages.add("This login is too short");
         }
 
         if (login.contains(" ")) {
             errorMessages.add("Login must not contains whitespace");
         }
-        return errorMessages ;
+        return errorMessages;
+    }
+
+    @Override
+    public String getInputName() {
+        return "login";
     }
 }
