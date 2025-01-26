@@ -22,7 +22,9 @@ public class LanguageServlet extends HttpServlet {
 
         String language = req.getParameter("language");
 
-        session.setAttribute("language", language);
+        if (language != null && !language.isEmpty()) {
+            session.setAttribute("language", language);
+        }
 
         resp.sendRedirect("/login");
     }
