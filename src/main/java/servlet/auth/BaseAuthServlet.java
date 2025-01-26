@@ -12,8 +12,7 @@ public abstract class BaseAuthServlet extends HttpServlet {
 
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+    public void init(ServletConfig config) {
 
         ServletContext servletContext = getServletContext();
 

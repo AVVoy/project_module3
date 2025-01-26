@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public class LoginValidationExecutor {
+public class ValidationExecutor {
 
     private final Map<String, Validator> validators;
 

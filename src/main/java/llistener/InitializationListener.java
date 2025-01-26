@@ -10,7 +10,7 @@ import jakarta.servlet.annotation.WebListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.ProductService;
 import service.UserService;
-import service.validation.LoginValidationExecutor;
+import service.validation.ValidationExecutor;
 import service.validation.Validator;
 import service.validation.impl.LoginValidator;
 import service.validation.impl.PasswordValidator;
@@ -41,7 +41,7 @@ public class InitializationListener implements ServletContextListener {
                 Map.entry("password", passwordValidator)
         );
 
-        LoginValidationExecutor loginValidationExecutor = new LoginValidationExecutor(validatorMap);
+        ValidationExecutor validationExecutor = new ValidationExecutor(validatorMap);
 
         ProductDAO productDao = new ProductDAO(objectMapper, productFile);
         ProductService productService = new ProductService(productDao);
@@ -51,7 +51,7 @@ public class InitializationListener implements ServletContextListener {
 
         servletContext.setAttribute("productService", productService);
 
-        servletContext.setAttribute("loginValidationExecutor", loginValidationExecutor);
+        servletContext.setAttribute("validationExecutor", validationExecutor);
 
     }
 }
